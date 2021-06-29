@@ -1,17 +1,6 @@
 # AlphaOthello
 
 1. Initialize boardweight
-    const int boardWeight[8][8] = { 
-      {25,  -5,  11,  6,  6, 11,  -5, 25},
-      {-5, -10,   1,  1,  1,  1, -10, -5},
-      { 11,  1,   4,  2,  2,  4,   1, 11},
-      {  6,  1,   2,  1,  1,  2,   1,  6},
-      {  6,  1,   2,  1,  1,  2,   1,  6},
-      { 11,  1,   4,  2,  2,  4,   1, 11},
-      {-5, -10,   1,  1,  1,  1, -10, -5},
-      {25,  -5,  11,  6,  6, 11,  -5, 25}
-    }; 
-    
    The corner of the board is the most valuable spot, and stable.
    The stability and score of the board can be represented by the boardweight.
 
