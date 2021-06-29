@@ -245,7 +245,7 @@ const int boardWeight[8][8] = {
 };
 */
 
-
+/*
 int getscore(OthelloBoard now)  {//diff
     int score = 0;
     if (now.winner == player)
@@ -357,6 +357,7 @@ int getscore(OthelloBoard now)  {//diff
 
     return score;
 }
+*/
 
 
 //calculate corner and edges 
@@ -435,9 +436,9 @@ int corner(OthelloBoard now){
         if(!row || !col) count*=2;
         points-=count;
 
-        // if(now.board[0][1] == 3-player) points-=2;
-        // if(now.board[1][1] == 3-player) points-=3;
-        // if(now.board[1][0] == 3-player) points-=2;
+        if(now.board[0][1] == 3-player) points-=2;
+        if(now.board[1][1] == 3-player) points-=3;
+        if(now.board[1][0] == 3-player) points-=2;
     }
 
     if(now.board[0][7]==player){
@@ -484,9 +485,9 @@ int corner(OthelloBoard now){
         if(!row || !col) count*=2;
         points-=count;
         
-        // if(now.board[1][7] == 3-player) points-=2;
-        // if(now.board[1][6] == 3-player) points-=3;
-        // if(now.board[0][6] == 3-player) points-=2;
+        if(now.board[1][7] == 3-player) points-=2;
+        if(now.board[1][6] == 3-player) points-=3;
+        if(now.board[0][6] == 3-player) points-=2;
     }
 
     if(now.board[7][0]==player){
@@ -534,9 +535,9 @@ int corner(OthelloBoard now){
         if(!row || !col) count*=2;
         points-=count;
 
-        // if(now.board[7][1] == 3-player) points-=2;
-        // if(now.board[6][1] == 3-player) points-=3;
-        // if(now.board[6][0] == 3-player) points-=2;
+        if(now.board[7][1] == 3-player) points-=2;
+        if(now.board[6][1] == 3-player) points-=3;
+        if(now.board[6][0] == 3-player) points-=2;
     }
 
     if(now.board[7][7]==player){
@@ -585,9 +586,9 @@ int corner(OthelloBoard now){
         if(!row || !col) count*=2;
         points-=count;
         
-        // if(now.board[6][7] == 3-player) points-=2;
-        // if(now.board[6][6] == 3-player) points-=3;
-        // if(now.board[7][6] == 3-player) points-=2;
+        if(now.board[6][7] == 3-player) points-=2;
+        if(now.board[6][6] == 3-player) points-=3;
+        if(now.board[7][6] == 3-player) points-=2;
     }
 
     // std::cout<<now.cur_player<<"-crnr:"<<points*1<<' ';
