@@ -14,7 +14,6 @@
 #define diffCTR 4
 #define cornerCTR 10
 
-
 struct Point {
     int x, y;
 	Point() : Point(0, 0) {}
@@ -185,12 +184,9 @@ public:
             }
         }
         return true;
-    }
-    
-    
+    } 
 };
-    
-
+  
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int player;
@@ -208,157 +204,6 @@ const int boardWeight[8][8] = {
     {-5, -10,   1,  1,  1,  1, -10, -5},
     {25, -5,  11,  6,  6, 11, -5, 25 }
 }; 
-/*
-boardWeight 
-
-const int boardWeight[8][8] = { 
-    {50, -3, 11,  8,  8, 11, -3, 50},
-    {-3, -7, -4,  1,  1, -4, -7, -3},
-    {11, -4,  2,  2,  2,  2, -4, 11},
-    { 8,  1,  2, -3, -3,  2,  1,  8},
-    { 8,  1,  2, -3, -3,  2,  1,  8},
-    {11, -4,  2,  2,  2,  2, -4, 11},
-    {-3, -7, -4,  1,  1, -4, -7, -3},
-    {50, -3, 11,  8,  8, 11, -3, 50}
-};
-
-const int boardWeight[8][8] = {
-    { 10, -3, 2, 2, 2, 2, -3,  10},
-    {-3, -4,-1,-1,-1,-1, -4, -3},
-    { 2, -1, 1, 0, 0, 1, -1,  2},
-    { 2, -1, 0, 1, 1, 0, -1,  2},
-    { 2, -1, 0, 1, 1, 0, -1,  2},
-    { 2, -1, 1, 0, 0, 1, -1,  2},
-    {-3, -4,-1,-1,-1,-1, -4, -3},
-    { 10, -3, 2, 2, 2, 2, -3,  10}
-};
-
-const int boardWeight[8][8] = { 
-    {20, -3, 11,  8,  8, 11, -3, 20},
-    {-3, -7, -4,  1,  1, -4, -7, -3},
-    {11, -4,  2,  2,  2,  2, -4, 11},
-    { 8,  1,  2, -3, -3,  2,  1,  8},
-    { 8,  1,  2, -3, -3,  2,  1,  8},
-    {11, -4,  2,  2,  2,  2, -4, 11},
-    {-3, -7, -4,  1,  1, -4, -7, -3},
-    {20, -3, 11,  8,  8, 11, -3, 20}
-};
-*/
-
-/*
-int getscore(OthelloBoard now)  {//diff
-    int score = 0;
-    if (now.winner == player)
-        score += 100;
-    if (now.winner == 3 - player)
-        score -= 100;
-    if (now.cur_player == player)
-        score += now.next_valid_spots.size();
-
-    for (int i = 0; i < 8; i++){
-        for (int j = 0; j < 8; j++) {
-            if (now.board[i][j] == player)
-                score += boardWeight[i][j];
-            else if (now.board[i][j] == 3 - player)
-                score -= boardWeight[i][j];
-        }
-    }
-
-    if (now.board[0][0] == player){
-        for (int i = 1; i < 7; i++){
-            if (now.board[i][0] == player)
-                score += 3;
-            if (now.board[0][i] == player)
-                score += 3;
-        }
-        if (now.board[1][1] == player)
-            score += 3;
-        if (now.board[0][1] == player)
-            score += 2;
-        if (now.board[1][0] == player)
-            score += 2;
-    }
-
-    if (now.board[7][7] == player){
-        for (int i = 1; i < 7; i++){
-            if (now.board[i][7] == player)
-                score += 3;
-            if (now.board[7][i] == player)
-                score += 3;
-        }
-        if (now.board[6][6] == player)
-            score += 3;
-        if (now.board[6][7] == player)
-            score += 2;
-        if (now.board[7][6] == player)
-            score += 2;
-    }
-    if (now.board[0][7] == player){
-        for (int i = 1; i < 7; i++){
-            if (now.board[i][7] == player)
-                score += 3;
-            if (now.board[0][i] == player)
-                score += 3;
-        }
-        if (now.board[1][6] == player)
-            score += 3;
-        if (now.board[0][6] == player)
-            score += 2;
-        if (now.board[1][7] == player)
-            score += 2;
-    }
-    if (now.board[7][0] == player){
-        for (int i = 1; i < 7; i++){
-            if (now.board[i][0] == player)
-                score += 3;
-            if (now.board[7][i] == player)
-                score += 3;
-        }
-        if (now.board[6][1] == player)
-            score += 3;
-        if (now.board[6][0] == player)
-            score += 2;
-        if (now.board[7][1] == player)
-            score += 2;
-    }
-
-    if (now.board[0][0] == 3 - player){
-        for (int i = 1; i < 7; i++){
-            if (now.board[i][0] == player)
-                score -= 2;
-            if (now.board[0][i] == player)
-                score -= 2;
-        }
-    }
-    if (now.board[7][7] == 3 - player){
-        for (int i = 1; i < 7; i++){
-            if (now.board[i][7] == player)
-                score -= 2;
-            if (now.board[7][i] == player)
-                score -= 2;
-        }
-    }
-    if (now.board[0][7] == 3 - player){
-        for (int i = 1; i < 7; i++){
-            if (now.board[i][7] == player)
-                score -= 3;
-            if (now.board[0][i] == player)
-                score -= 3;
-        }
-    }
-    if (now.board[7][0] == 3 - player){
-        for (int i = 1; i < 7; i++){
-            if (now.board[i][0] == player)
-                score -= 3;
-            if (now.board[7][i] == player)
-                score -= 3;
-        }
-    }
-
-    return score;
-}
-*/
-
 
 //calculate corner and edges 
 int corner(OthelloBoard now){
@@ -602,16 +447,12 @@ int corner(OthelloBoard now){
     else if(now.disc_count[now.EMPTY] > 24){
         return disc_diff + points*25;
     }
-    return disc_diff + points*30;
+    return disc_diff + points *30;
 }
 
 int heuristic(OthelloBoard now){
-    //int  total = ( corner(now) + point_diff(now) + now.get_valid_spots());
     //std::cout<<"heur: "<<total<<".:. ";
     return corner(now);
-    // size_t disc_diff = now.disc_count[player] - now.disc_count[3-player];
-    
-    // return disc_diff + getscore(now);
 }
 
 class Node{
