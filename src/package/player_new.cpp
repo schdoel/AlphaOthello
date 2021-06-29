@@ -10,6 +10,9 @@
 #include <algorithm>
 
 #define DEPTH 4
+#define diffCTR 4
+#define cornerCTR 10
+
 
 #include <climits>
 
@@ -71,7 +74,6 @@ private:
             return false;
         return true;
     }
-    
     bool is_spot_valid(Point center) const { //check trhu 8 directions whether the spot is valid or not
         if (get_disc(center) != EMPTY)
             return false;
@@ -237,371 +239,392 @@ public:
         return ss.str();
     }
 };
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 int player;
 const int SIZE = 8;
 std::vector<Point> next_valid_spots;
 OthelloBoard now;
 
-// int boardWeight[8][8] = {
-//     { 4, -3, 2, 2, 2, 2, -3,  4},
-//     {-3, -4,-1,-1,-1,-1, -4, -3},
-//     { 2, -1, 1, 0, 0, 1, -1,  2},
-//     { 2, -1, 0, 1, 1, 0, -1,  2},
-//     { 2, -1, 0, 1, 1, 0, -1,  2},
-//     { 2, -1, 1, 0, 0, 1, -1,  2},
-//     {-3, -4,-1,-1,-1,-1, -4, -3},
-//     { 4, -3, 2, 2, 2, 2, -3,  4}
-// };
-
-// int boardWeight [8][8] = {
-//     {10, 2, 4, 4, 4, 4, 2,10},
-//     { 2, 1, 2, 2, 2, 2, 1, 2},
-//     { 4, 2, 3, 3, 3, 3, 2, 4},
-//     { 4, 2, 3, 3, 3, 3, 2, 4},
-//     { 4, 2, 3, 3, 3, 3, 2, 4},
-//     { 4, 2, 3, 3, 3, 3, 2, 4},
-//     { 2, 1, 2, 2, 2, 2, 1, 2},
-//     {10, 2, 4, 4, 4, 4, 2,10}
-// };
-
-// int boardWeight[8][8] = { 
+// const int boardWeight[8][8] = { 
 //     {100, -5,  11,  6,  6, 11, -5, 100},
-//     {-5, -10,   1,  3,  3,  1, -10, -5},
-//     { 11,  1,   5,  4,  4,  5,   1, 11},
-//     {  6,  3,   4,  2,  2,  4,   3,  6},
-//     {  6,  3,   4,  2,  2,  4,   3,  6},
-//     { 11,  1,   5,  4,  4,  5,   1, 11},
-//     {-5, -10,   1,  3,  3,  1, -10, -5},
+//     {-5, -10,   1,  1,  1,  1, -10, -5},
+//     { 11,  1,   4,  2,  2,  4,   1, 11},
+//     {  6,  1,   2,  1,  1,  2,   1,  6},
+//     {  6,  1,   2,  1,  1,  2,   1,  6},
+//     { 11,  1,   4,  2,  2,  4,   1, 11},
+//     {-5, -10,   1,  1,  1,  1, -10, -5},
 //     {100, -5,  11,  6,  6, 11, -5, 100}    
 // }; 
 
-int boardWeight[8][8] = { 
-    {30, -3, 11,  8,  8, 11, -3, 30},
-    {-3, -7, -4,  1,  1, -4, -7, -3},
-    {11, -4,  2,  2,  2,  2, -4, 11},
-    { 8,  1,  2, -3, -3,  2,  1,  8},
-    { 8,  1,  2, -3, -3,  2,  1,  8},
-    {11, -4,  2,  2,  2,  2, -4, 11},
-    {-3, -7, -4,  1,  1, -4, -7, -3},
-    {30, -3, 11,  8,  8, 11, -3, 30}
-}; 
+// const int boardWeight[8][8] = { 
+//     {50, -3, 11,  8,  8, 11, -3, 50},
+//     {-3, -7, -4,  1,  1, -4, -7, -3},
+//     {11, -4,  2,  2,  2,  2, -4, 11},
+//     { 8,  1,  2, -3, -3,  2,  1,  8},
+//     { 8,  1,  2, -3, -3,  2,  1,  8},
+//     {11, -4,  2,  2,  2,  2, -4, 11},
+//     {-3, -7, -4,  1,  1, -4, -7, -3},
+//     {50, -3, 11,  8,  8, 11, -3, 50}
+// };
 
+const int boardWeight[8][8] = {
+    { 10, -3, 2, 2, 2, 2, -3,  10},
+    {-3, -4,-1,-1,-1,-1, -4, -3},
+    { 2, -1, 1, 0, 0, 1, -1,  2},
+    { 2, -1, 0, 1, 1, 0, -1,  2},
+    { 2, -1, 0, 1, 1, 0, -1,  2},
+    { 2, -1, 1, 0, 0, 1, -1,  2},
+    {-3, -4,-1,-1,-1,-1, -4, -3},
+    { 10, -3, 2, 2, 2, 2, -3,  10}
+};
 
-
-
-int cekSederet(OthelloBoard now,int x, int y,int play){
-    int rowCount = 0;
-    int colCount = 0;
+int checkAdjacent(OthelloBoard now, int x, int y, int play){
     int flagRow = 0;
     int flagCol = 0;
-    for(int i=0; i<7; i++){
+    for(int i=0; i<8; i++){
+        if(flagRow && flagCol) break;
         if(now.board[i][x]!=play){
             flagRow = 1;
         }
         if(now.board[y][i]!=play){
             flagCol = 1;
         }
-        if(flagCol && flagRow) break;
-        if(!flagRow){
-            if(now.board[i][x]==play) rowCount+=1;
-        } 
-        if(!flagCol){
-             if(now.board[y][i]==play) colCount+=1;
-        }
     }
-
-    if(!flagRow && !flagCol) return 14+rowCount+colCount;
-    else if((!flagRow && flagCol) || (flagRow &&!flagCol)) return 7+rowCount+colCount;
-    else return rowCount+colCount;
-
-    // int flagRow = 0;
-    // int flagCol = 0;
-    // for(int i=0; i<7; i++){
-    //     if(flagRow && flagCol) break;
-    //     if(now.board[i][x]!=player){
-    //         flagRow = 1;
-    //     }
-    //     if(now.board[y][i]!=player){
-    //         flagCol = 1;
-    //     }
-    // }
-    // if(!flagRow && !flagCol) return 14;
-    // else if((!flagRow && flagCol) || (flagRow &&!flagCol)) return 7;
-    // else return 0;
+    if(!flagRow && !flagCol) return 14;
+    else if((!flagRow && flagCol) || (flagRow &&!flagCol)) return 7;
+    else return 0;
 }
 
- std::vector<Point> get_valid_sp(int play) const {
-        std::vector<Point> valid_spots;
-        
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                Point p = Point(i, j);
-                if (board[i][j] != EMPTY)
-                    continue;
-                if (is_sp_valid(p, play))
-                    valid_spots.push_back(p);
-            }
-        }
-        return valid_spots;
+int adjacent(const OthelloBoard now, int row, int col, int play){
+    return 0;
+    bool flagR = false;
+    bool flagC = false;
+    int points = 0;
+    for(int i=0; i<8; i++){
+        if(now.board[row][i]!=play) flagR = true;
+        if(now.board[i][col]!=play) flagC = true;
+        if(!flagR && now.board[row][i]==play) points ++;
+        if(!flagC && now.board[i][col]==play) points ++;
     }
-    bool is_sp_valid(Point center, int play) const { //check trhu 8 directions whether the spot is valid or not
-        if (get_disc(center) != EMPTY)
-            return false;
-        for (Point dir: directions) {
-            // Move along the direction while testing.
-            Point p = center + dir;
-            if (!is_disc_at(p, get_next_player(play)))
-                continue;
-            p = p + dir;
-            while (is_spot_on_board(p) && get_disc(p) != EMPTY) {
-                if (is_disc_at(p, play))
-                    return true;
-                p = p + dir;
-            }
-        }
-        return false;
-    }
-
-int CEK(OthelloBoard now){
+    // return points;
     
-	int my_tiles = 0, opp_tiles = 0, i, j, k, my_front_tiles = 0, opp_front_tiles = 0, x, y;
-	double p = 0, c = 0, l = 0, m = 0, f = 0, d = 0;
+    //cek 2920
 
-
-    // Piece difference, frontier disks and disk squares
-        for(i=0; i<8; i++)
-            for(j=0; j<8; j++)  {
-                if(now.board[i][j] == now.cur_player)  {
-                    d += boardWeight[i][j];
-                    my_tiles++;
-                } else if(now.board[i][j] == 3-now.cur_player)  {
-                    d -= boardWeight[i][j];
-                    opp_tiles++;
-                }
-                if(now.board[i][j] == now.cur_player || now.board[i][j] == 3-now.cur_player) {
-                    for(k=0; k<8; k++)  {
-                        x = i + now.directions[k].x; y = j + now.directions[k].y;
-                        if(x >= 0 && x < 8 && y >= 0 && y < 8 && now.board[x][y] == '-') {
-                            if(now.board[i][j] == now.cur_player)  my_front_tiles++;
-                            else opp_front_tiles++;
-                            break;
-                        }
-                    }
-                }
-            }
-        if(my_tiles > opp_tiles)
-            p = (100.0 * my_tiles)/(my_tiles + opp_tiles); 
-        else if(my_tiles < opp_tiles)
-            p = -(100.0 * opp_tiles)/(my_tiles + opp_tiles);
-        else p = 0;
-
-        if(my_front_tiles > opp_front_tiles)
-            f = -(100.0 * my_front_tiles)/(my_front_tiles + opp_front_tiles);
-        else if(my_front_tiles < opp_front_tiles)
-            f = (100.0 * opp_front_tiles)/(my_front_tiles + opp_front_tiles);
-        else f = 0;
-
-    // Corner occupancy
-        int cornerPts = 0;
-        //ur doomed if corner empty but u place it
-        int nearCornerPts = 0;
-        if(now.board[0][0] == now.cur_player) cornerPts+=100;
-        else if(now.board[0][0] == 3-now.cur_player) cornerPts-=100;
-        else{
-            if(now.board[0][1] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[0][1] == 3-now.cur_player) nearCornerPts-=1;
-            if(now.board[1][1] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[1][1] == 3-now.cur_player) nearCornerPts-=1;
-            if(now.board[1][0] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[1][0] == 3-now.cur_player) nearCornerPts-=1;
-        }
-        if(now.board[0][7] == now.cur_player) cornerPts+=100;
-        else if(now.board[0][7] == 3-now.cur_player) cornerPts-=100;
-        else{
-            if(now.board[0][6] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[0][6] == 3-now.cur_player) nearCornerPts-=1;
-            if(now.board[1][6] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[1][6] == 3-now.cur_player) nearCornerPts-=1;
-            if(now.board[1][7] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[1][7] == 3-now.cur_player) nearCornerPts-=1;
-        }
-        if(now.board[7][0] == now.cur_player) cornerPts+=100;
-        else if(now.board[7][0] == 3-now.cur_player) cornerPts-=100;
-        else{
-            if(now.board[7][1] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[7][1] == 3-now.cur_player) nearCornerPts-=1;
-            if(now.board[6][1] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[6][1] == 3-now.cur_player) nearCornerPts-=1;
-            if(now.board[6][0] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[6][0] == 3-now.cur_player) nearCornerPts-=1;
-        }
-        if(now.board[7][7] == now.cur_player) cornerPts+=100;
-        else if(now.board[7][7] == 3-now.cur_player) cornerPts-=100;
-        else{
-            if(now.board[6][7] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[6][7] == 3-now.cur_player) nearCornerPts-=1;
-            if(now.board[6][6] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[6][6] == 3-now.cur_player) nearCornerPts-=1;
-            if(now.board[7][6] == now.cur_player) nearCornerPts+=1;
-            else if(now.board[7][6] == 3-now.cur_player) nearCornerPts-=1;
-        }
-        c = 800 * cornerPts;
-        l = -12 * nearCornerPts;
-
-    // Mobility berapa banyak yng bs dipake 
-    
-         my_tiles = now.get_valid_sp(now.cur_player);
-         opp_tiles = now.get_valid_sp(3-now.cur_player);
-            m = (100.0 * my_tiles)/(my_tiles + opp_tiles);
-        else if(my_tiles < opp_tiles)
-            m = -(100.0 * opp_tiles)/(my_tiles + opp_tiles);
-        else m = 0;
-
-    // final weighted score
-        double score = (10 * p) + (801.724 * c) + (382.026 * l) + (78.922 * m) + (74.396 * f) + (10 * d);
-        return int(score);
+    if(!flagR && !flagC) return 30 * points;
+    else if((!flagR && flagC) || (flagR &&!flagC)) return 10*points;
+    else return 4*points;
 }
-
-   
 
 //calculate corner and edges 
 int corner(OthelloBoard now){
     int points = 0;
+    int corner = 0;
+    int opcor = 0;
 
     if(now.board[0][0]==player){
-        points += 100;
-        points += cekSederet(now,0,0,player);
-        if(now.board[0][1] == now.cur_player) points+=2;
-        if(now.board[1][1] == now.cur_player) points+=3;
-        if(now.board[1][0] == now.cur_player) points+=2;
-    }
-    else if(now.board[0][0]==3-player){
-        points -= 100;
-        points -= cekSederet(now,0,0, 3-player);
-        if(now.board[0][1] == 3-now.cur_player) points-=2;
-        if(now.board[1][1] == 3-now.cur_player) points-=3;
-        if(now.board[1][0] == 3-now.cur_player) points-=2;
-    }
-    else{
-        int nearCornerPts = 0;
-        if(now.board[0][1] == now.cur_player) nearCornerPts+=1;
-        else if(now.board[0][1] == 3-now.cur_player) nearCornerPts-=1;
-        if(now.board[1][6] == now.cur_player) nearCornerPts+=2;
-        else if(now.board[1][6] == 3-now.cur_player) nearCornerPts-=2;
-        if(now.board[1][7] == now.cur_player) nearCornerPts+=1;
-        else if(now.board[1][7] == 3-now.cur_player) nearCornerPts-=1;
-        points += nearCornerPts*-3;
-    }
+        corner+=1;
+        points += 10;
 
-    if(now.board[0][7]==player){
-        points += 100;
-        points += cekSederet(now,0,7, player);
-        if(now.board[7][1] == now.cur_player) points+=2;
-        if(now.board[6][1] == now.cur_player) points+=3;
-        if(now.board[6][0] == now.cur_player) points+=2;
-    }
-    else if(now.board[0][7]==3-player){
-        points -= 100;
-        points -= cekSederet(now,0,7, 3-player);
-        if(now.board[7][1] == 3-now.cur_player) points-=2;
-        if(now.board[6][1] == 3-now.cur_player) points-=3;
-        if(now.board[6][0] == 3-now.cur_player) points-=2;
-    }
-    else{
-        int nearCornerPts = 0;
-        if(now.board[7][1] == now.cur_player) nearCornerPts+=1;
-        else if(now.board[7][1] == 3-now.cur_player) nearCornerPts-=1;
-        if(now.board[6][1] == now.cur_player) nearCornerPts+=2;
-        else if(now.board[6][1] == 3-now.cur_player) nearCornerPts-=2;
-        if(now.board[6][0] == now.cur_player) nearCornerPts+=1;
-        else if(now.board[6][0] == 3-now.cur_player) nearCornerPts-=1;
-        points += nearCornerPts*-3;
-    }
+        bool row = false;
+        bool col = true;
+        int count = 0;
 
-    if(now.board[7][0]==player){
-        points += 100;
-        points += cekSederet(now,7,0, player);
-        if(now.board[0][1] == now.cur_player) points+=2;
-        if(now.board[1][1] == now.cur_player) points+=3;
-        if(now.board[1][0] == now.cur_player) points+=2;
-    }
-    else if(now.board[7][0]==3-player){
-        points -= 100;
-        points -= cekSederet(now,7,0, 3-player);
-        if(now.board[0][1] == 3-now.cur_player) points-=2;
-        if(now.board[1][1] == 3-now.cur_player) points-=3;
-        if(now.board[1][0] == 3-now.cur_player) points-=2;
-    }
-    else{
-        int nearCornerPts = 0;
-        if(now.board[0][1] == now.cur_player) nearCornerPts+=1;
-        else if(now.board[0][1] == 3-now.cur_player) nearCornerPts-=1;
-        if(now.board[1][1] == now.cur_player) nearCornerPts+=2;
-        else if(now.board[1][1] == 3-now.cur_player) nearCornerPts-=2;
-        if(now.board[1][0] == now.cur_player) nearCornerPts+=1;
-        else if(now.board[1][0] == 3-now.cur_player) nearCornerPts-=1;
-        points += nearCornerPts*-3;
-    }
-
-    if(now.board[7][7]==player){
-        points += 100;
-        points += cekSederet(now,7,7, player);
-        if(now.board[6][7] == now.cur_player) points+=2;
-        if(now.board[6][6] == now.cur_player) points+=3;
-        if(now.board[7][6] == now.cur_player) points+=2;
-    }
-    else if(now.board[7][7]==3-player){
-        points -= 100;
-        points -= cekSederet(now,7,7, 3-player);
-        if(now.board[6][7] == 3-now.cur_player) points-=2;
-        if(now.board[6][6] == 3-now.cur_player) points-=3;
-        if(now.board[7][6] == 3-now.cur_player) points-=2;
-    }
-    else{
-        int nearCornerPts = 0;
-        if(now.board[6][7] == now.cur_player) nearCornerPts+=1;
-        else if(now.board[6][7] == 3-now.cur_player) nearCornerPts-=1;
-        if(now.board[6][6] == now.cur_player) nearCornerPts+=2;
-        else if(now.board[6][6] == 3-now.cur_player) nearCornerPts-=2;
-        if(now.board[7][6] == now.cur_player) nearCornerPts+=1;
-        else if(now.board[7][6] == 3-now.cur_player) nearCornerPts-=1;
-        points += nearCornerPts*-3;
-    }
-
-    return points;
-}
-
-int valueWeight(OthelloBoard now){
-    int points = 0;
-}
-
-//diff between black and white pieces
-int point_diff(OthelloBoard now){
-    int plyr=0; 
-
-    for(int i=0; i<8; i++){
-        for(int j=0; j<8; j++){
-            if (now.board[i][j] == player){
-                plyr+=1;
-                // diskWeights+=boardWeight[i][j];
+        for(int i=1; i<=6; i++){ 
+            if(now.board[0][i]!=player) row = true;
+            if(now.board[i][0]!=player) col = true;
+            if(!row && now.board[0][i]==player){
+                count+=1;
             }
-            else if(now.board[i][j] == 3-player){
-                plyr-=1;
-                // diskWeights-=boardWeight[i][j];
+            if(!col && now.board[i][0]==player){
+                count+=1;
             }
         }
+        if(!row && !col) count*=4;
+        if(!row || !col) count*=2;
+        points+=count;
+
+        points += adjacent(now,0,0,player);
+        if(now.board[0][1] == player) points+=2;
+        if(now.board[1][1] == player) points+=3;
+        if(now.board[1][0] == player) points+=2;
+        
     }
-    return plyr;
+    else if(now.board[0][0]==3-player){
+        points -= 10;
+        opcor += 1;
+        // points -= checkAdjacent(now,0,0, 3-player);
+
+        bool row = false;
+        bool col = true;
+        int count = 0;
+        // int countR = 0;
+        // int countC = 0;
+        for(int i=1; i<=6; i++){ 
+            if(now.board[0][i]!=3-player) row = true;
+            if(now.board[i][0]!=3-player) col = true;
+            if(!row && now.board[0][i]==3-player){
+                count+=1;
+            }
+            if(!col && now.board[i][0]==3-player){
+                count+=1;
+            }
+        }
+        if(!row && !col) count*=4;
+        if(!row || !col) count*=2;
+        points-=count;//(countC+countR);
+
+        points -= adjacent(now,0,0, 3-player);
+        if(now.board[0][1] == 3-player) points-=2;
+        if(now.board[1][1] == 3-player) points-=3;
+        if(now.board[1][0] == 3-player) points-=2;
+    }
+    // else{
+    //     int nearCornerPts = 0;
+    //     if(now.board[0][1] == player) nearCornerPts+=1;
+    //     else if(now.board[0][1] == 3-player) nearCornerPts-=1;
+    //     if(now.board[1][6] == player) nearCornerPts+=2;
+    //     else if(now.board[1][6] == 3-player) nearCornerPts-=2;
+    //     if(now.board[1][7] == player) nearCornerPts+=1;
+    //     else if(now.board[1][7] == 3-player) nearCornerPts-=1;
+    //     points -= (nearCornerPts*2);
+    // }
+
+    if(now.board[0][7]==player){
+        corner+=1;
+        points += 10;
+        // points += checkAdjacent(now,0,7, player);
+
+        bool row = false;
+        bool col = true;
+        // int countR = 0;
+        // int countC = 0;
+        int count = 0;
+        int i=6;
+        int j=1;
+        while(i!=0 && j!=7){
+            if(now.board[0][i]!=player) row = true;
+            if(now.board[j][7]!=player) col = true;
+            if(now.board[0][i]==player && !row) count+=1;
+            if(now.board[j][7]==player && !col) count +=1;
+            i--, j++;
+        }
+        if(!row && !col) count*=4;
+        if(!row || !col) count*=2;
+        points+=count;
+
+        points += adjacent(now,0,7, player);
+        
+        if(now.board[1][7] == player) points+=2;
+        if(now.board[1][6] == player) points+=3;
+        if(now.board[0][6] == player) points+=2;
+    }
+    else if(now.board[0][7]==3-player){
+        points -= 10;
+        opcor += 1;
+        // points -= checkAdjacent(now,0,7, 3-player);
+
+        bool row = false;
+        bool col = true;
+        // int countR = 0;
+        // int countC = 0;
+        int count = 0;
+        int i=6;
+        int j=1;
+        while(i!=0 && j!=7){
+            if(now.board[0][i]!=3-player) row = true;
+            if(now.board[j][7]!=3-player) col = true;
+            if(now.board[0][i]==3-player && !row) count+=1;
+            if(now.board[j][7]==3-player && !col) count +=1;
+            i--, j++;
+        }
+        if(!row && !col) count*=4;
+        if(!row || !col) count*=2;
+        points-=count;
+        
+        points -= adjacent(now,0,7, 3-player);
+        if(now.board[1][7] == 3-player) points-=2;
+        if(now.board[1][6] == 3-player) points-=3;
+        if(now.board[0][6] == 3-player) points-=2;
+    }
+    // else{
+    //     int nearCornerPts = 0;
+    //     if(now.board[7][1] == player) nearCornerPts+=1;
+    //     else if(now.board[7][1] == 3-player) nearCornerPts-=1;
+    //     if(now.board[6][1] == player) nearCornerPts+=2;
+    //     else if(now.board[6][1] == 3-player) nearCornerPts-=2;
+    //     if(now.board[6][0] == player) nearCornerPts+=1;
+    //     else if(now.board[6][0] == 3-player) nearCornerPts-=1;
+    //     points -= nearCornerPts*2;
+    // }
+
+    if(now.board[7][0]==player){
+        corner+=1;
+        points += 10;
+        // points += checkAdjacent(now,7,0, player);
+
+        bool row = false;
+        bool col = true;
+        // int countR = 0;
+        // int countC = 0;
+        int count = 0;
+        int j=6;
+        int i=1;
+        while(j!=0 && i!=7){
+            if(now.board[7][i]!=player) row = true;
+            if(now.board[j][0]!=player) col = true;
+            if(now.board[7][i]==player && !row) count+=1;
+            if(now.board[j][0]==player && !col) count +=1;
+            j--, i++;
+        }
+        if(!row && !col) count*=4;
+        if(!row || !col) count*=2;
+        points+=count;
+
+        points += adjacent(now,7,0, player);
+        if(now.board[7][1] == player) points+=2;
+        if(now.board[6][1] == player) points+=3;
+        if(now.board[6][0] == player) points+=2;
+    }
+    else if(now.board[7][0]==3-player){
+        points -= 10;
+        opcor += 1;
+        // points -= checkAdjacent(now,7,0, 3-player);
+
+        bool row = false;
+        bool col = true;
+        // int countR = 0;
+        // int countC = 0;
+        int count = 0;
+        int j=6;
+        int i=1;
+        while(j!=0 && i!=7){
+            if(now.board[7][i]!=3-player) row = true;
+            if(now.board[j][0]!=3-player) col = true;
+            if(now.board[7][i]==3-player && !row) count+=1;
+            if(now.board[j][0]==3-player && !col) count +=1;
+            j--, i++;
+        }
+        if(!row && !col) count*=4;
+        if(!row || !col) count*=2;
+        points-=count;
+
+        points -= adjacent(now,7,0, 3-player);
+        if(now.board[7][1] == 3-player) points-=2;
+        if(now.board[6][1] == 3-player) points-=3;
+        if(now.board[6][0] == 3-player) points-=2;
+    }
+    // else{
+    //     int nearCornerPts = 0;
+    //     if(now.board[0][1] == player) nearCornerPts+=1;
+    //     else if(now.board[0][1] == 3-player) nearCornerPts-=1;
+    //     if(now.board[1][1] == player) nearCornerPts+=2;
+    //     else if(now.board[1][1] == 3-player) nearCornerPts-=2;
+    //     if(now.board[1][0] == player) nearCornerPts+=1;
+    //     else if(now.board[1][0] == 3-player) nearCornerPts-=1;
+    //     points -= nearCornerPts*2;
+    // }
+
+    if(now.board[7][7]==player){
+        corner+=1;
+        points += 10;
+        // points += checkAdjacent(now,7,7, player);
+
+        bool row = false;
+        bool col = true;
+        int count = 0;
+        // int countR = 0;
+        // int countC = 0;
+        for(int i=6; i>=1; i--){ 
+            if(now.board[7][i]!=player) row = true;
+            if(now.board[i][7]!=player) col = true;
+            if(!row && now.board[7][i]==player){
+                count+=1;
+            }
+            if(!col && now.board[i][7]==player){
+                count+=1;
+            }
+        }
+        if(!row && !col) count*=4;
+        if(!row || !col) count*=2;
+        points+=count;//(countC+countR);
+
+        points += adjacent(now,7,7, player);
+        if(now.board[6][7] == player) points+=2;
+        if(now.board[6][6] == player) points+=3;
+        if(now.board[7][6] == player) points+=2;
+    }
+    else if(now.board[7][7]==3-player){
+        points -= 10;
+        opcor += 1;
+        // points -= checkAdjacent(now,7,7, 3-player);
+
+        bool row = false;
+        bool col = true;
+        int count = 0;
+        // int countR = 0;
+        // int countC = 0;
+        for(int i=6; i>=1; i--){ 
+            if(now.board[7][i]!=3-player) row = true;
+            if(now.board[i][7]!=3-player) col = true;
+            if(!row && now.board[7][i]==3-player){
+                count+=1;
+            }
+            if(!col && now.board[i][7]==3-player){
+                count+=1;
+            }
+        }
+        if(!row && !col) count*=4;
+        if(!row || !col) count*=2;
+        points-=count;//(countC+countR);
+
+        points -= adjacent(now,7,7, 3-player);
+        if(now.board[6][7] == 3-player) points-=2;
+        if(now.board[6][6] == 3-player) points-=3;
+        if(now.board[7][6] == 3-player) points-=2;
+    }
+
+    std::cout<<now.cur_player<<"-crnr:"<<points*1<<' ';
+
+    size_t disc_diff = now.disc_count[player] - now.disc_count[3-player];
+    
+
+    if(corner==0 && now.disc_count[now.EMPTY] > 48){
+        return disc_diff + points*10;
+    }
+    else if(now.disc_count[now.EMPTY] > 24){
+        return disc_diff + points*15;
+    }
+    return disc_diff + points*1;
 }
+
+// //diff between black and white pieces
+// int point_diff(OthelloBoard now){
+//     int plyr=0; 
+
+//     for(int i=0; i<8; i++){
+//         for(int j=0; j<8; j++){
+//             if (now.board[i][j] == player){
+//                 plyr++;
+//             }
+//             else if(now.board[i][j] == 3-player){
+//                 plyr--;
+//             }
+//         }
+//     }
+//     std::cout<<now.cur_player<<"-pion:"<<plyr*diffCTR<<" ";
+//     return plyr*diffCTR;
+// }
 
 //heuristic concentrates more on the edges to get more points
 //the total point
 int heuristic(OthelloBoard now){
-    std::cout<<"corner : "<<corner(now)<<"\n";
-    std::cout<<"point_diff : "<<point_diff(now)<<"\n";
-    int  total = ( corner(now) + point_diff(now));
-    std::cout<<"heuristic : "<<total<<"\n";
-    return total;
+    //int  total = ( corner(now) + point_diff(now) + now.get_valid_spots());
+    //std::cout<<"heur: "<<total<<".:. ";
+    return corner(now);
 }
 
 class Node{
@@ -615,10 +638,12 @@ class Node{
 
 
 Node MiniMax(const OthelloBoard curState, int depth, int alpha, int beta, bool isMax){
-    std::cout<<"\n";
+    bool print=false;
+    if(alpha==INT_MIN&&beta==INT_MIN)print=true;
+    //std::cout<<"in"<<depth<<"\n";
     if(depth == 0 || curState.done){
-        // return Node(Point(-1,-1),heuristic(curState));
-        return Node(Point(-1,-1),CEK(curState));
+        return Node(Point(-1,-1),heuristic(curState));
+        // return Node(Point(-1,-1),CEK(curState));
     }
     if(now.cur_player == player){
         Point P_Max = Point(-2,-2);
@@ -638,9 +663,12 @@ Node MiniMax(const OthelloBoard curState, int depth, int alpha, int beta, bool i
             if(Max>alpha){
                 alpha = Max;
             }
-            if(alpha >= beta) break;
+            if(alpha >= beta) {break;
+            }
         }
-        // std::cout<<depth<<"P_Max , Max: "<<P_Max.x<<P_Max.y<<" "<<Max<<"\n";
+        //std::cout<<depth<<"P_Max , Max: "<<P_Max.x<<P_Max.y<<" "<<Max<<"\n";
+            
+        if(print)std::cout<<" "<<depth<<"Max "<<Max<<"\n";
         return Node(P_Max, Max);
     }
     else{
@@ -661,9 +689,11 @@ Node MiniMax(const OthelloBoard curState, int depth, int alpha, int beta, bool i
             if(Min<beta){
                 beta = Min;
             }
-            if(beta <= alpha) break;
+            if(beta <= alpha) {break;
+            }
         }
-        // std::cout<<depth<<"P_Min , Min: "<<P_Min.x<<P_Min.y<<" "<<Min<<"\n";
+        //std::cout<<depth<<"Min: "<<P_Min.x<<P_Min.y<<" "<<Min<<"\n";
+        if(print)std::cout<<" "<<depth<<"Min "<<Min<<"\n";
         return Node(P_Min, Min);
     }  
 }
