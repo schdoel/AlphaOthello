@@ -14,6 +14,7 @@
 #define diffCTR 4
 #define cornerCTR 10
 
+
 struct Point {
     int x, y;
 	Point() : Point(0, 0) {}
@@ -184,9 +185,12 @@ public:
             }
         }
         return true;
-    } 
+    }
+    
+    
 };
-  
+    
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int player;
@@ -215,7 +219,6 @@ int corner(OthelloBoard now){
         points -= 100;
     if (now.cur_player == player)
         points += now.next_valid_spots.size();
-
 
     int weight = 0;
     for (int i = 0; i < 8; i++){
@@ -447,31 +450,31 @@ int corner(OthelloBoard now){
     else if(now.disc_count[now.EMPTY] > 24){
         return disc_diff + points*25;
     }
-    return disc_diff + points *30;
+    return disc_diff + points*30;
 }
 
+
 int heuristic(OthelloBoard now){
-    //std::cout<<"heur: "<<total<<".:. ";
     return corner(now);
 }
 
-class Node{
+class PointValue{
     public:
         Point p;
         int score;
-        Node(){}
-        Node(Point P, int Score) : p(P), score(Score) {}
+        PointValue(){}
+        PointValue(Point P, int Score) : p(P), score(Score) {}
 };
 
 
 
-Node MiniMax(const OthelloBoard curState, int depth, int alpha, int beta){
+PointValue MiniMax(const OthelloBoard curState, int depth, int alpha, int beta){
     // bool print=false;
     // if(alpha==INT_MIN&&beta==INT_MIN)print=true;
     //std::cout<<"in"<<depth<<"\n";
     if(depth == 0 || curState.done){
-        return Node(Point(-1,-1),heuristic(curState));
-        // return Node(Point(-1,-1),CEK(curState));
+        return PointValue(Point(-1,-1),heuristic(curState));
+        // return PointValue(Point(-1,-1),CEK(curState));
     }
     if(curState.cur_player == player){//max
         // std::cout<<"max"<<depth<<' ';
@@ -482,7 +485,7 @@ Node MiniMax(const OthelloBoard curState, int depth, int alpha, int beta){
             OthelloBoard nextState (curState);
             nextState.put_disc(valid_spot);
 
-            Node nextMoveMin = MiniMax(nextState, depth-1, alpha, beta);
+            PointValue nextMoveMin = MiniMax(nextState, depth-1, alpha, beta);
             if(nextMoveMin.score > Max){
                 Max = nextMoveMin.score;
                 P_Max = valid_spot;
@@ -497,7 +500,7 @@ Node MiniMax(const OthelloBoard curState, int depth, int alpha, int beta){
         //std::cout<<depth<<"P_Max , Max: "<<P_Max.x<<P_Max.y<<" "<<Max<<"\n";
             
         // if(print)std::cout<<" "<<depth<<"Max "<<Max<<"\n";
-        return Node(P_Max, Max);
+        return PointValue(P_Max, Max);
     }
     else{//min
         // std::cout<<"min"<<depth<<' ';
@@ -508,7 +511,7 @@ Node MiniMax(const OthelloBoard curState, int depth, int alpha, int beta){
             OthelloBoard nextState (curState);
             nextState.put_disc(valid_spot);
             
-            Node nextMoveMax = MiniMax(nextState, depth-1, alpha, beta);
+            PointValue nextMoveMax = MiniMax(nextState, depth-1, alpha, beta);
             if(nextMoveMax.score < Min){
                 Min = nextMoveMax.score;
                 P_Min = valid_spot;
@@ -522,7 +525,7 @@ Node MiniMax(const OthelloBoard curState, int depth, int alpha, int beta){
         }
         //std::cout<<depth<<"Min: "<<P_Min.x<<P_Min.y<<" "<<Min<<"\n";
         // if(print)std::cout<<" "<<depth<<"Min "<<Min<<"\n";
-        return Node(P_Min, Min);
+        return PointValue(P_Min, Min);
     }  
 }
 
@@ -557,7 +560,7 @@ void write_valid_spot(std::ofstream& fout) {
     // for(auto it:global.next_valid_spots){
     //     std::cout<<it.x<<it.y<<std::endl;
     // }
-    Node maxim = MiniMax(global, DEPTH, INT_MIN, INT_MAX);
+    PointValue maxim = MiniMax(global, DEPTH, INT_MIN, INT_MAX);
     // Remember to flush the output to ensure the last action is written to file.
     fout << maxim.p.x << " " << maxim.p.y << std::endl;
     // std::cout<<"Best Spot: "<<maxim.p.x << " " <<maxim.p.y <<std ::endl;
