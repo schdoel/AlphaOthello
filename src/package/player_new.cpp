@@ -189,8 +189,6 @@ public:
     
     
 };
-    
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int player;
@@ -213,9 +211,9 @@ const int boardWeight[8][8] = {
 int corner(OthelloBoard now){
 
     int points = 0;
-    if (now.winner == player) points += 100;
-    if (now.winner == 3 - player) points -= 100;
     if (now.cur_player == player) points += now.next_valid_spots.size();
+    if (now.winner == player) points += 110;
+    if (now.winner == 3 - player) points -= 110;
 
     int weight = 0;
     for (int i = 0; i < 8; i++){
@@ -440,7 +438,7 @@ int corner(OthelloBoard now){
 
     size_t disc_diff = now.disc_count[player] - now.disc_count[3-player];
 
-    if(corner==0 && now.disc_count[now.EMPTY] > 48) return disc_diff + points*20;
+    if(now.disc_count[now.EMPTY] > 48 && corner==0) return disc_diff + points*20;
     else if(opcor >corner) return disc_diff + points*5;
     else if(now.disc_count[now.EMPTY] > 24) return disc_diff + points*25;
     return disc_diff + points*30;
@@ -553,9 +551,9 @@ void write_valid_spot(std::ofstream& fout) {
     // for(auto it:global.next_valid_spots){
     //     std::cout<<it.x<<it.y<<std::endl;
     // }
-    PointValue maxim = MiniMax(global, DEPTH, INT_MIN, INT_MAX);
+    PointValue MaxPoint = MiniMax(global, DEPTH, INT_MIN, INT_MAX);
     // Remember to flush the output to ensure the last action is written to file.
-    fout << maxim.p.x << " " << maxim.p.y << std::endl;
+    fout << MaxPoint.p.x << " " << MaxPoint.p.y << std::endl;
     // std::cout<<"Best Spot: "<<maxim.p.x << " " <<maxim.p.y <<std ::endl;
     fout.flush();
 }
