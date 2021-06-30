@@ -213,12 +213,9 @@ const int boardWeight[8][8] = {
 int corner(OthelloBoard now){
 
     int points = 0;
-    if (now.winner == player)
-        points += 100;
-    if (now.winner == 3 - player)
-        points -= 100;
-    if (now.cur_player == player)
-        points += now.next_valid_spots.size();
+    if (now.winner == player) points += 100;
+    if (now.winner == 3 - player) points -= 100;
+    if (now.cur_player == player) points += now.next_valid_spots.size();
 
     int weight = 0;
     for (int i = 0; i < 8; i++){
@@ -443,13 +440,9 @@ int corner(OthelloBoard now){
 
     size_t disc_diff = now.disc_count[player] - now.disc_count[3-player];
 
-    if(corner==0 && now.disc_count[now.EMPTY] > 48){
-        return disc_diff + points*20;
-    }
+    if(corner==0 && now.disc_count[now.EMPTY] > 48) return disc_diff + points*20;
     else if(opcor >corner) return disc_diff + points*5;
-    else if(now.disc_count[now.EMPTY] > 24){
-        return disc_diff + points*25;
-    }
+    else if(now.disc_count[now.EMPTY] > 24) return disc_diff + points*25;
     return disc_diff + points*30;
 }
 
@@ -478,7 +471,7 @@ PointValue MiniMax(const OthelloBoard curState, int depth, int alpha, int beta){
     }
     if(curState.cur_player == player){//max
         // std::cout<<"max"<<depth<<' ';
-        Point P_Max = Point(-2,-2);
+        Point P_Max = Point(-1,-1);
         int Max = INT_MIN;
         
         for(auto valid_spot : curState.next_valid_spots){
@@ -504,7 +497,7 @@ PointValue MiniMax(const OthelloBoard curState, int depth, int alpha, int beta){
     }
     else{//min
         // std::cout<<"min"<<depth<<' ';
-        Point P_Min = Point(-3,-3);
+        Point P_Min = Point(-1,-1);
         int Min = INT_MAX;
 
         for(auto valid_spot : curState.next_valid_spots){
